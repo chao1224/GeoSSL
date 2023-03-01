@@ -9,6 +9,6 @@ echo $@
 date
 
 echo "start"
-python -u pretrain_GeoSSL.py $@
+python -u pretrain_ChargePrediction.py $@
 echo "end"
 date

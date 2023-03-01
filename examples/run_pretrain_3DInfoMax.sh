@@ -9,6 +9,6 @@ echo $@
 date
 
 echo "start"
-python -u pretrain_GeoSSL.py $@
+python -u pretrain_3DInfoMax.py $@
 echo "end"
 date
