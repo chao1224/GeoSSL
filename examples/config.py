@@ -114,83 +114,11 @@ parser.add_argument("--num_gaussians", type=int, default=51)
 parser.add_argument("--cutoff", type=float, default=10)
 parser.add_argument("--readout", type=str, default="mean", choices=["mean", "add"])
 
-# for TFN
-parser.add_argument("--tfn_num_layers", type=int, default=7)
-parser.add_argument("--tfn_num_channels", type=int, default=32)
-parser.add_argument("--tfn_num_degrees", type=int, default=4)
-parser.add_argument("--tfn_num_nlayers", type=int, default=1)
-
-# for SE(3)-Transformer
-parser.add_argument("--se3_transformer_num_layers", type=int, default=7)
-parser.add_argument("--se3_transformer_num_channels", type=int, default=32)
-parser.add_argument("--se3_transformer_num_degrees", type=int, default=4)
-parser.add_argument("--se3_transformer_num_nlayers", type=int, default=1)
-parser.add_argument("--se3_transformer_div", type=int, default=2)
-parser.add_argument("--se3_transformer_n_heads", type=int, default=8)
-
-# for EGNN
-parser.add_argument("--egnn_n_layers", type=int, default=7)
-parser.add_argument("--egnn_attention", type=int, default=1)
-parser.add_argument("--egnn_node_attr", type=int, default=0)
-parser.add_argument("--egnn_positions_weight", type=float, default=1.0)
-parser.add_argument("--egnn_charge_power", type=int, default=2)
-
-# for DimeNet++
-parser.add_argument("--dimenetPP_num_blocks", type=int, default=4)
-parser.add_argument("--dimenetPP_int_emb_size", type=int, default=64)
-parser.add_argument("--dimenetPP_basis_emb_size", type=int, default=8)
-parser.add_argument("--dimenetPP_out_emb_channels", type=int, default=128)
-parser.add_argument("--dimenetPP_num_spherical", type=int, default=7)
-parser.add_argument("--dimenetPP_num_radial", type=int, default=6)
-parser.add_argument("--dimenetPP_cutoff", type=float, default=5.0)
-parser.add_argument("--dimenetPP_envelope_exponent", type=int, default=5)
-parser.add_argument("--dimenetPP_num_before_skip", type=int, default=1)
-parser.add_argument("--dimenetPP_num_after_skip", type=int, default=2)
-parser.add_argument("--dimenetPP_num_output_layers", type=int, default=3)
-
-# for SphereNet
-parser.add_argument("--spherenet_cutoff", type=float, default=5.0)
-parser.add_argument("--spherenet_num_layers", type=int, default=4)
-parser.add_argument("--spherenet_int_emb_size", type=int, default=64)
-parser.add_argument("--spherenet_basis_emb_size_dist", type=int, default=8)
-parser.add_argument("--spherenet_basis_emb_size_angle", type=int, default=8)
-parser.add_argument("--spherenet_basis_emb_size_torsion", type=int, default=8)
-parser.add_argument("--spherenet_out_emb_channels", type=int, default=256)
-parser.add_argument("--spherenet_num_spherical", type=int, default=3)
-parser.add_argument("--spherenet_num_radial", type=int, default=6)
-parser.add_argument("--spherenet_envelope_exponent", type=int, default=5)
-parser.add_argument("--spherenet_num_before_skip", type=int, default=1)
-parser.add_argument("--spherenet_num_after_skip", type=int, default=2)
-parser.add_argument("--spherenet_num_output_layers", type=int, default=3)
-
-# for SEGNN
-parser.add_argument("--segnn_radius", type=float, default=2)
-
 # for PaiNN
 parser.add_argument("--painn_radius_cutoff", type=float, default=5.0)
 parser.add_argument("--painn_n_interactions", type=int, default=3)
 parser.add_argument("--painn_n_rbf", type=int, default=20)
 parser.add_argument("--painn_readout", type=str, default="add", choices=["mean", "add"])
-
-# for GemNet
-parser.add_argument("--gemnet_num_spherical", type=int, default=7)
-parser.add_argument("--gemnet_num_radial", type=int, default=6)
-parser.add_argument("--gemnet_num_blocks", type=int, default=4)
-parser.add_argument("--gemnet_emb_size_trip", type=int, default=64)
-parser.add_argument("--gemnet_emb_size_quad", type=int, default=32)
-parser.add_argument("--gemnet_emb_size_rbf", type=int, default=16)
-parser.add_argument("--gemnet_emb_size_cbf", type=int, default=16)
-parser.add_argument("--gemnet_emb_size_sbf", type=int, default=32)
-parser.add_argument("--gemnet_emb_size_bil_quad", type=int, default=64)
-parser.add_argument("--gemnet_emb_size_bil_trip", type=int, default=32)
-parser.add_argument("--gemnet_num_before_skip", type=int, default=1)
-parser.add_argument("--gemnet_num_after_skip", type=int, default=1)
-parser.add_argument("--gemnet_num_concat", type=int, default=1)
-parser.add_argument("--gemnet_num_atom", type=int, default=1)
-parser.add_argument("--gemnet_cutoff", type=float, default=5.)
-parser.add_argument("--gemnet_int_cutoff", type=float, default=10.)
-parser.add_argument("--gemnet_triplets_only", type=int, default=0, choices=[0, 1])
-parser.add_argument("--gemnet_scale_file", type=str, default="scaling_factors.json")
 
 ######################### for Charge Prediction SSL #########################
 parser.add_argument("--charge_masking_ratio", type=float, default=0.3)
@@ -216,11 +144,11 @@ parser.add_argument("--graph_pooling", type=str, default="mean")
 parser.add_argument("--JK", type=str, default="last")
 parser.add_argument("--gnn_2d_lr_scale", type=float, default=1)
 
-######################### for EBM GeoSSL #########################
+######################### for GeoSSL #########################
 parser.add_argument("--EBMGeoSSL_mu", type=float, default=0)
 parser.add_argument("--EBMGeoSSL_sigma", type=float, default=0.3)
 parser.add_argument("--EBMGeoSSL_atom_masking_ratio", type=float, default=0.3)
-parser.add_argument("--EBM_option", type=str, default="EBM_NCE", choices=["EBM_NCE", "EBM_SM_01", "EBM_SM_02", "EBM_SM_03", "EBM_NCE_SM_01", "InfoNCE", "RR"])
+parser.add_argument("--GeoSSL_option", type=str, default="EBM_NCE", choices=["EBM_NCE", "EBM_SM_01", "EBM_SM_02", "EBM_SM_03", "EBM_NCE_SM_01", "InfoNCE", "RR"])
 parser.add_argument("--EBM_NCE_SM_coefficient", type=float, default=10.)
 
 parser.add_argument("--SM_sigma_begin", type=float, default=10)
