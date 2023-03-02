@@ -57,9 +57,9 @@ for SM_anneal_power in "${SM_anneal_power_list[@]}"; do
     mkdir -p "$output_model_dir"
 
     if [[ ! -f "$output_model_dir"/model_final.pth ]]; then
-        sbatch --gres=gpu:1 -n 8 --nodes 1 -t 11:59:00 --partition=TrixieMain --job-name=ds_03 \
+        sbatch --gres=gpu:v100l:1 -c 8 --mem=32G -t "$time":59:00  --account=rrg-bengioy-ad --qos=high --job-name=NCE_"$model_3d"_"$time" \
         --output="$output_file" \
-        ./run_pretrain_EBM.sh \
+        ./run_pretrain_GeoSSL.sh \
         --model_3d="$model_3d" --input_data_dir="$input_data_dir" --dataset="$dataset" \
         --epochs="$epochs" --lr="$lr" --lr_scheduler="$lr_scheduler" \
         --GeoSSL_mu="$GeoSSL_mu" --GeoSSL_sigma="$GeoSSL_sigma" --GeoSSL_atom_masking_ratio="$GeoSSL_atom_masking_ratio" \
