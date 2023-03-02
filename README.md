@@ -15,6 +15,24 @@ This repository provides the source code for the ICLR'23 paper **Molecular Geome
 - For fine-tuning (downstream), we consider QM9, MD17, LBA & LEP.
 
 ## Environments
+```bash
+conda create -n Geom3D python=3.7
+conda activate Geom3D
+conda install -y -c rdkit rdkit
+conda install -y numpy networkx scikit-learn
+conda install -y -c conda-forge -c pytorch pytorch=1.9.1
+conda install -y -c pyg -c conda-forge pyg=2.0.2
+pip install ogb==1.2.1
+
+pip install sympy
+
+pip install ase  # for SchNet
+
+pip install atom3d # for Atom3D
+pip install cffi # for Atom3D
+pip install biopython # for Atom3D
+```
+
 
 ## Pretraining
 
