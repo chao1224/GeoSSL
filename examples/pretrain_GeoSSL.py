@@ -237,19 +237,19 @@ def train(device, loader, optimizer):
         if args.GeoSSL_option == "EBM_NCE":
             loss, acc = do_EBM_NCE(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
         elif args.GeoSSL_option == "InfoNCE":
             loss, acc = do_InfoNCE(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
         elif args.GeoSSL_option == "RR":
             loss, acc = do_RR(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
         elif args.GeoSSL_option == "DDM":
             loss, acc = do_DDM(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
         else:
             raise ValueError("{} not included.".format(args.GeoSSL_option))
         accum_loss += loss.detach().item()
@@ -293,10 +293,10 @@ if __name__ == "__main__":
     else:
         raise Exception
     transform = AtomTupleExtractor(ratio=args.distance_sample_ratio, option=option)
-    dataset = Molecule3DDataset(data_root, dataset=args.dataset, mask_ratio=args.EBMGeoSSL_atom_masking_ratio, transform=transform)
+    dataset = Molecule3DDataset(data_root, dataset=args.dataset, mask_ratio=args.GeoSSL_atom_masking_ratio, transform=transform)
     if args.model_3d == "painn":
         data_root = "{}_{}".format(data_root, args.painn_radius_cutoff)
-        dataset = MoleculeDataset3DRadius(data_root, preprcessed_dataset=dataset, mask_ratio=args.EBMGeoSSL_atom_masking_ratio, radius=args.painn_radius_cutoff)
+        dataset = MoleculeDataset3DRadius(data_root, preprcessed_dataset=dataset, mask_ratio=args.GeoSSL_atom_masking_ratio, radius=args.painn_radius_cutoff)
 
     loader = DataLoaderAtomTuple(dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 

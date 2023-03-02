@@ -145,10 +145,10 @@ parser.add_argument("--JK", type=str, default="last")
 parser.add_argument("--gnn_2d_lr_scale", type=float, default=1)
 
 ######################### for GeoSSL #########################
-parser.add_argument("--EBMGeoSSL_mu", type=float, default=0)
-parser.add_argument("--EBMGeoSSL_sigma", type=float, default=0.3)
-parser.add_argument("--EBMGeoSSL_atom_masking_ratio", type=float, default=0.3)
-parser.add_argument("--GeoSSL_option", type=str, default="EBM_NCE", choices=["EBM_NCE", "EBM_SM_01", "EBM_SM_02", "EBM_SM_03", "EBM_NCE_SM_01", "InfoNCE", "RR"])
+parser.add_argument("--GeoSSL_mu", type=float, default=0)
+parser.add_argument("--GeoSSL_sigma", type=float, default=0.3)
+parser.add_argument("--GeoSSL_atom_masking_ratio", type=float, default=0.3)
+parser.add_argument("--GeoSSL_option", type=str, default="EBM_NCE", choices=["DDM", "EBM_NCE", "InfoNCE", "RR"])
 parser.add_argument("--EBM_NCE_SM_coefficient", type=float, default=10.)
 
 parser.add_argument("--SM_sigma_begin", type=float, default=10)
