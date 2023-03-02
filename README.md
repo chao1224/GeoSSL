@@ -48,6 +48,8 @@ For pretraining, we provide implementations on eight pretraining baselines and o
   - GeoSSL-EBM-NCE pretraining with argument `--GeoSSL_option=EBM-NCE`.
   - GeoSSL-DDM pretraining (ours) with argument `--GeoSSL_option=DDM`.
 
+The running scripts and corresponding hyper-parameters can be found in `scripts/pretrain_baselines` and `scripts/pretrain_GeoSSL_DDM`. 
+
 <p align="center">
   <img src="fig/pipeline.png" /> 
 </p>
@@ -60,7 +62,7 @@ The downstream scripts can be found under the `examples` folder:
 - `finetune_lba.py`
 - `finetune_lep.py`
 
-The running scripts and corresponding hyper-parameters can be found in `scripts/xxx`. Note that as a fair comparison, we keep a fixed hyper-parameter set for each downstream task, and the only difference is the pretrained checkpoints.
+The running scripts and corresponding hyper-parameters can be found in `scripts/finetune`. Note that as a fair comparison, we keep a fixed hyper-parameter set for each downstream task, and the only difference is the pretrained checkpoints.
 
 ## Checkpoints
 
