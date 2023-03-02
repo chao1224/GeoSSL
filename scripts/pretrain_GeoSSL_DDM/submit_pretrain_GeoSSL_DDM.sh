@@ -17,24 +17,17 @@ export time=23
 
 
 
-export GeoSSL_mu_list=(0 1)
-export GeoSSL_sigma_list=(0.3 5)
+export GeoSSL_mu_list=(0)
+export GeoSSL_sigma_list=(0.3)
 export GeoSSL_atom_masking_ratio_list=(0 0.3)
 export GeoSSL_option_list=(DDM)
-
-
 
 export SM_sigma_begin_list=(10)
 export SM_sigma_end_list=(0.01)
 export SM_num_noise_level_list=(30 50)
 export SM_noise_type_list=(symmetry)
-export SM_anneal_power_list=(0.5 1 2)
+export SM_anneal_power_list=(0.05 2 5 10)
 
-
-export GeoSSL_sigma_list=(0.3)
-export GeoSSL_atom_masking_ratio_list=(0 0.15 0.3)
-export SM_num_noise_level_list=(30 50)
-export SM_anneal_power_list=(0.05 0.1 0.2 0.5)
 
 
 for model_3d in "${model_3d_list[@]}"; do
@@ -57,7 +50,7 @@ for SM_anneal_power in "${SM_anneal_power_list[@]}"; do
     mkdir -p "$output_model_dir"
 
     if [[ ! -f "$output_model_dir"/model_final.pth ]]; then
-        sbatch --gres=gpu:v100l:1 -c 8 --mem=32G -t "$time":59:00  --account=rrg-bengioy-ad --qos=high --job-name=NCE_"$model_3d"_"$time" \
+        sbatch --gres=gpu:v100l:1 -c 8 --mem=32G -t "$time":59:00  --account=rrg-bengioy-ad --qos=high --job-name=DDM_"$model_3d"_"$time" \
         --output="$output_file" \
         ./run_pretrain_GeoSSL.sh \
         --model_3d="$model_3d" --input_data_dir="$input_data_dir" --dataset="$dataset" \
@@ -69,10 +62,6 @@ for SM_anneal_power in "${SM_anneal_power_list[@]}"; do
         --num_workers="$num_workers" --batch_size="$batch_size" \
         --output_model_dir="$output_model_dir"
     fi
-
-    echo
-    echo
-    echo
 
 done
 done

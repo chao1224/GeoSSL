@@ -27,7 +27,6 @@ for torsion_angle_sample_ratio in "${torsion_angle_sample_ratio_list[@]}"; do
     mkdir -p "$output_model_dir"
 
     if [[ ! -f "$output_file" ]]; then
-        echo "$output_file" undone
         sbatch --gres=gpu:v100l:1 -c 8 --mem=64G -t "$time":59:00  --account=rrg-bengioy-ad --qos=high --job-name=TAP_"$model_3d"_"$time" \
         --output="$output_file" \
         ./run_"$mode".sh \
