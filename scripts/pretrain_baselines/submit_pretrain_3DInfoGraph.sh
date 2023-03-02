@@ -26,8 +26,7 @@ for lr_scheduler in "${lr_scheduler_list[@]}"; do
 
     if [[ ! -f "$output_file" ]]; then
         echo "$output_file" undone
-        # sbatch --gres=gpu:v100l:1 -c 8 --mem=64G -t "$time":59:00  --account=rrg-bengioy-ad --qos=high --job-name=3DIG_"$model_3d"_"$time" \
-        sbatch --gres=gpu:1 -n 8 --mem 64G --nodes 1 -t "$time":59:00 --partition=TrixieLong --job-name=3DIG_"$model_3d"_"$time" \
+        sbatch --gres=gpu:v100l:1 -c 8 --mem=64G -t "$time":59:00  --account=rrg-bengioy-ad --qos=high --job-name=3DIG_"$model_3d"_"$time" \
         --output="$output_file" \
         ./run_"$mode".sh \
         --model_3d="$model_3d" --input_data_dir="$input_data_dir" --dataset="$dataset" \
