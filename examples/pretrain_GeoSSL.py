@@ -14,9 +14,9 @@ from torch_geometric.loader import DataLoader
 from config import args
 from util import cycle_index
 from Geom3D.datasets import Molecule3DDataset, MoleculeDataset3DRadius
-from Geom3D.models import DimeNetPlusPlus, SchNet, PaiNN, AutoEncoder
+from Geom3D.models import SchNet, PaiNN, AutoEncoder
 from Geom3D.dataloaders import AtomTupleExtractor, DataLoaderAtomTuple
-from NCSN import NCSN_version_01, NCSN_version_02, NCSN_version_03
+from NCSN import NCSN_version_03
 
 
 def model_setup():
@@ -29,24 +29,6 @@ def model_setup():
             cutoff=args.cutoff,
             readout=args.readout,
             node_class=node_class,
-        )
-        
-    elif args.model_3d == "dimenetPP":
-        model = DimeNetPlusPlus(
-            node_class=node_class,
-            hidden_channels=args.emb_dim,
-            out_channels=1,
-            num_blocks=args.dimenetPP_num_blocks,
-            int_emb_size=args.dimenetPP_int_emb_size,
-            basis_emb_size=args.dimenetPP_basis_emb_size,
-            out_emb_channels=args.dimenetPP_out_emb_channels,
-            num_spherical=args.dimenetPP_num_spherical,
-            num_radial=args.dimenetPP_num_radial,
-            cutoff=args.dimenetPP_cutoff,
-            envelope_exponent=args.dimenetPP_envelope_exponent,
-            num_before_skip=args.dimenetPP_num_before_skip,
-            num_after_skip=args.dimenetPP_num_after_skip,
-            num_output_layers=args.dimenetPP_num_output_layers,
         )
     elif args.model_3d == "painn":
         model = PaiNN(
@@ -102,9 +84,6 @@ def do_RR(args, batch, model, mu, sigma, **kwargs):
     if args.model_3d == "schnet":
         molecule_3D_repr_01 = model(x_01, positions_01, batch.batch)
         molecule_3D_repr_02 = model(x_02, positions_02, batch.batch)
-    elif args.model_3d == "dimenetPP":
-        molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, extract_representation=True)
-        molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, extract_representation=True)
     elif args.model_3d == "painn":
         molecule_3D_repr_01 = model(x_01, positions_01, batch.radius_edge_index, batch.batch)
         molecule_3D_repr_02 = model(x_02, positions_02, batch.radius_edge_index, batch.batch)
@@ -131,9 +110,6 @@ def do_EBM_NCE(args, batch, model, criterion, mu, sigma, num_neg=1):
     if args.model_3d == "schnet":
         molecule_3D_repr_01 = model(x_01, positions_01, batch.batch)
         molecule_3D_repr_02 = model(x_02, positions_02, batch.batch)
-    elif args.model_3d == "dimenetPP":
-        molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, extract_representation=True)
-        molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, extract_representation=True)
     elif args.model_3d == "painn":
         molecule_3D_repr_01 = model(x_01, positions_01, batch.radius_edge_index, batch.batch)
         molecule_3D_repr_02 = model(x_02, positions_02, batch.radius_edge_index, batch.batch)
@@ -172,9 +148,6 @@ def do_InfoNCE(args, batch, model, criterion, mu, sigma, num_neg=1):
     if args.model_3d == "schnet":
         molecule_3D_repr_01 = model(x_01, positions_01, batch.batch)
         molecule_3D_repr_02 = model(x_02, positions_02, batch.batch)
-    elif args.model_3d == "dimenetPP":
-        molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, extract_representation=True)
-        molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, extract_representation=True)
     elif args.model_3d == "painn":
         molecule_3D_repr_01 = model(x_01, positions_01, batch.radius_edge_index, batch.batch)
         molecule_3D_repr_02 = model(x_02, positions_02, batch.radius_edge_index, batch.batch)
@@ -203,7 +176,7 @@ def do_InfoNCE(args, batch, model, criterion, mu, sigma, num_neg=1):
     return SSL_loss, SSL_acc
 
 
-def do_EBM_SM_01(args, batch, model, criterion, mu, sigma, num_neg=1):
+def do_DDM(args, batch, model, criterion, mu, sigma, num_neg=1):
     positions = batch.positions
 
     x_01 = batch.x[:, 0]
@@ -213,9 +186,6 @@ def do_EBM_SM_01(args, batch, model, criterion, mu, sigma, num_neg=1):
     if args.model_3d == "schnet":
         _, molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, return_latent=True)
         _, molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, return_latent=True)
-    elif args.model_3d == "dimenetPP":
-        _, molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, extract_representation=True, return_latent=True)
-        _, molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, extract_representation=True, return_latent=True)
     elif args.model_3d == "painn":
         _, molecule_3D_repr_01 = model(x_01, positions_01, batch.radius_edge_index, batch.batch, return_latent=True)
         _, molecule_3D_repr_02 = model(x_02, positions_02, batch.radius_edge_index, batch.batch, return_latent=True)
@@ -242,111 +212,6 @@ def do_EBM_SM_01(args, batch, model, criterion, mu, sigma, num_neg=1):
     return loss, 0
 
 
-def do_EBM_SM_02(args, batch, model, criterion, mu, sigma, num_neg=1):
-    return do_EBM_SM_01(args, batch, model, criterion, mu, sigma, num_neg)
-
-
-def do_EBM_SM_03(args, batch, model, criterion, mu, sigma, num_neg=1):
-    return do_EBM_SM_01(args, batch, model, criterion, mu, sigma, num_neg)
-
-
-def check_EBM_SM(args, batch, model, criterion, mu, sigma, num_neg=1):
-    positions = batch.positions
-
-    x_01 = batch.x[:, 0]
-    positions_01 = positions
-    x_02, positions_02 = perturb(x_01, positions, mu, sigma)
-
-    if args.model_3d == "schnet":
-        _, molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, return_latent=True)
-        _, molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, return_latent=True)
-    elif args.model_3d == "dimenetPP":
-        _, molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, extract_representation=True, return_latent=True)
-        _, molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, extract_representation=True, return_latent=True)
-    elif args.model_3d == "painn":
-        _, molecule_3D_repr_01 = model(x_01, positions_01, batch.radius_edge_index, batch.batch, return_latent=True)
-        _, molecule_3D_repr_02 = model(x_02, positions_02, batch.radius_edge_index, batch.batch, return_latent=True)
-
-    if args.normalize:
-        molecule_3D_repr_01 = F.normalize(molecule_3D_repr_01, dim=-1)
-        molecule_3D_repr_02 = F.normalize(molecule_3D_repr_02, dim=-1)
-
-    super_edge_index = batch.super_edge_index
-
-    u_pos_01 = torch.index_select(positions_01, dim=0, index=super_edge_index[0])
-    v_pos_01 = torch.index_select(positions_01, dim=0, index=super_edge_index[1])
-    distance_01 = torch.sqrt(torch.sum((u_pos_01-v_pos_01)**2, dim=1)).unsqueeze(1) # (num_edge, 1)
-    
-    u_pos_02 = torch.index_select(positions_02, dim=0, index=super_edge_index[0])
-    v_pos_02 = torch.index_select(positions_02, dim=0, index=super_edge_index[1])
-    distance_02 = torch.sqrt(torch.sum((u_pos_02-v_pos_02)**2, dim=1)).unsqueeze(1) # (num_edge, 1)
-
-    loss_01 = NCSN_model_01(batch, molecule_3D_repr_01, distance_02, debug=False)
-    loss_02 = NCSN_model_02(batch, molecule_3D_repr_02, distance_01, debug=False)
-    return
-
-
-def do_EBM_NCE_SM_01(args, batch, model, criterion, mu, sigma, num_neg=1):
-    positions = batch.positions
-
-    x_01 = batch.x[:, 0]
-    positions_01 = positions
-    x_02, positions_02 = perturb(x_01, positions, mu, sigma)
-
-    if args.model_3d == "schnet":
-        _, molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, return_latent=True)
-        _, molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, return_latent=True)
-    elif args.model_3d == "dimenetPP":
-        _, molecule_3D_repr_01 = model(x_01, positions_01, batch.batch, extract_representation=True, return_latent=True)
-        _, molecule_3D_repr_02 = model(x_02, positions_02, batch.batch, extract_representation=True, return_latent=True)
-    elif args.model_3d == "painn":
-        _, molecule_3D_repr_01 = model(x_01, positions_01, batch.radius_edge_index, batch.batch, return_latent=True)
-        _, molecule_3D_repr_02 = model(x_02, positions_02, batch.radius_edge_index, batch.batch, return_latent=True)
-
-    if args.normalize:
-        molecule_3D_repr_01 = F.normalize(molecule_3D_repr_01, dim=-1)
-        molecule_3D_repr_02 = F.normalize(molecule_3D_repr_02, dim=-1)
-
-    ########## Do NCE ##########
-    B = len(molecule_3D_repr_01)
-    molecule_3D_repr_01_pos = molecule_3D_repr_01
-    molecule_3D_repr_02_pos = molecule_3D_repr_02
-    molecule_3D_repr_01_neg = molecule_3D_repr_01_pos.repeat((num_neg, 1))
-    molecule_3D_repr_02_neg = torch.cat([molecule_3D_repr_02[cycle_index(B, i + 1)] for i in range(num_neg)], dim=0)
-
-    pred_pos = torch.sum(molecule_3D_repr_01_pos * molecule_3D_repr_02_pos, dim=1)
-    pred_neg = torch.sum(molecule_3D_repr_01_neg * molecule_3D_repr_02_neg, dim=1)
-
-    loss_pos = criterion(pred_pos.double(), torch.ones(B).to(device).double())
-    loss_neg = criterion(pred_neg.double(), torch.zeros(B * num_neg).to(device).double())
-
-    loss_NCE = (loss_pos + num_neg * loss_neg) / (1 + num_neg)
-
-    num_pred = len(pred_pos) + len(pred_neg)
-    acc = (torch.sum(pred_pos > 0).float() + torch.sum(pred_neg < 0).float()) / num_pred
-
-    ########## Do SM ##########
-    super_edge_index = batch.super_edge_index
-
-    u_pos_01 = torch.index_select(positions_01, dim=0, index=super_edge_index[0])
-    v_pos_01 = torch.index_select(positions_01, dim=0, index=super_edge_index[1])
-    distance_01 = torch.sqrt(torch.sum((u_pos_01-v_pos_01)**2, dim=1)).unsqueeze(1) # (num_edge, 1)
-    
-    u_pos_02 = torch.index_select(positions_02, dim=0, index=super_edge_index[0])
-    v_pos_02 = torch.index_select(positions_02, dim=0, index=super_edge_index[1])
-    distance_02 = torch.sqrt(torch.sum((u_pos_02-v_pos_02)**2, dim=1)).unsqueeze(1) # (num_edge, 1)
-
-    loss_01 = NCSN_model_01(batch, molecule_3D_repr_01, distance_02)
-    loss_02 = NCSN_model_02(batch, molecule_3D_repr_02, distance_01)
-
-    loss_SM = (loss_01 + loss_02) / 2
-
-    ########## Gather ##########
-    loss = (args.EBM_NCE_SM_coefficient * loss_NCE + loss_SM) / (1 + args.EBM_NCE_SM_coefficient)
-
-    return loss, acc.detach().item()
-
-
 def train(device, loader, optimizer):
     model.train()
     if AE_model_01 is not None:
@@ -369,45 +234,30 @@ def train(device, loader, optimizer):
     for step, batch in enumerate(L):
         batch = batch.to(device)
 
-        if args.EBM_option == "EBM_NCE":
+        if args.GeoSSL_option == "EBM_NCE":
             loss, acc = do_EBM_NCE(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
-        elif args.EBM_option == "InfoNCE":
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
+        elif args.GeoSSL_option == "InfoNCE":
             loss, acc = do_InfoNCE(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
-        elif args.EBM_option == "RR":
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
+        elif args.GeoSSL_option == "RR":
             loss, acc = do_RR(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
-        elif args.EBM_option == "EBM_SM_01":
-            loss, acc = do_EBM_SM_01(
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
+        elif args.GeoSSL_option == "DDM":
+            loss, acc = do_DDM(
                 args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
-        elif args.EBM_option == "EBM_SM_02":
-            loss, acc = do_EBM_SM_02(
-                args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
-        elif args.EBM_option == "EBM_SM_03":
-            loss, acc = do_EBM_SM_03(
-                args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
-        elif args.EBM_option == "EBM_NCE_SM_01":
-            loss, acc = do_EBM_NCE_SM_01(
-                args, batch, model, criterion=criterion,
-                mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
+                mu=args.GeoSSL_mu, sigma=args.GeoSSL_sigma)
         else:
-            raise ValueError("{} not included.".format(args.EBM_option))
+            raise ValueError("{} not included.".format(args.GeoSSL_option))
         accum_loss += loss.detach().item()
         accum_acc += acc
 
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-
-    if args.EBM_option in ["EBM_SM_01", "EBM_SM_02", "EBM_SM_03"]:
-        check_EBM_SM(args, batch, model, criterion=criterion, mu=args.EBMGeoSSL_mu, sigma=args.EBMGeoSSL_sigma)
 
     global optimal_loss
     accum_loss /= num_iters
@@ -443,10 +293,10 @@ if __name__ == "__main__":
     else:
         raise Exception
     transform = AtomTupleExtractor(ratio=args.distance_sample_ratio, option=option)
-    dataset = Molecule3DDataset(data_root, dataset=args.dataset, mask_ratio=args.EBMGeoSSL_atom_masking_ratio, transform=transform)
+    dataset = Molecule3DDataset(data_root, dataset=args.dataset, mask_ratio=args.GeoSSL_atom_masking_ratio, transform=transform)
     if args.model_3d == "painn":
         data_root = "{}_{}".format(data_root, args.painn_radius_cutoff)
-        dataset = MoleculeDataset3DRadius(data_root, preprcessed_dataset=dataset, mask_ratio=args.EBMGeoSSL_atom_masking_ratio, radius=args.painn_radius_cutoff)
+        dataset = MoleculeDataset3DRadius(data_root, preprcessed_dataset=dataset, mask_ratio=args.GeoSSL_atom_masking_ratio, radius=args.painn_radius_cutoff)
 
     loader = DataLoaderAtomTuple(dataset, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers)
 
@@ -466,28 +316,10 @@ if __name__ == "__main__":
 
     AE_model_01 = AE_model_02 = None
     NCSN_model_01 = NCSN_model_02 = None
-    if args.EBM_option == "RR":
+    if args.GeoSSL_option == "RR":
         AE_model_01 = AutoEncoder(emb_dim=args.emb_dim, loss=args.AE_loss, detach_target=args.detach_target,beta=args.beta).to(device)
         AE_model_02 = AutoEncoder(emb_dim=args.emb_dim, loss=args.AE_loss, detach_target=args.detach_target,beta=args.beta).to(device)
-    elif args.EBM_option in ["EBM_SM_01", "EBM_NCE_SM_01"]:
-        NCSN_model_01 = NCSN_version_01(
-            args.emb_dim,
-            sigma_begin=args.SM_sigma_begin, sigma_end=args.SM_sigma_end, num_noise_level=args.SM_num_noise_level,
-            noise_type=args.SM_noise_type, anneal_power=args.SM_anneal_power).to(device)
-        NCSN_model_02 = NCSN_version_01(
-            args.emb_dim,
-            sigma_begin=args.SM_sigma_begin, sigma_end=args.SM_sigma_end, num_noise_level=args.SM_num_noise_level,
-            noise_type=args.SM_noise_type, anneal_power=args.SM_anneal_power).to(device)
-    elif args.EBM_option in ["EBM_SM_02"]:
-        NCSN_model_01 = NCSN_version_02(
-            args.emb_dim,
-            sigma_begin=args.SM_sigma_begin, sigma_end=args.SM_sigma_end, num_noise_level=args.SM_num_noise_level,
-            noise_type=args.SM_noise_type, anneal_power=args.SM_anneal_power).to(device)
-        NCSN_model_02 = NCSN_version_02(
-            args.emb_dim,
-            sigma_begin=args.SM_sigma_begin, sigma_end=args.SM_sigma_end, num_noise_level=args.SM_num_noise_level,
-            noise_type=args.SM_noise_type, anneal_power=args.SM_anneal_power).to(device)
-    elif args.EBM_option in ["EBM_SM_03"]:
+    elif args.GeoSSL_option == "DDM":
         NCSN_model_01 = NCSN_version_03(
             args.emb_dim,
             sigma_begin=args.SM_sigma_begin, sigma_end=args.SM_sigma_end, num_noise_level=args.SM_num_noise_level,
