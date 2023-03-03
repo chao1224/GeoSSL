@@ -66,7 +66,7 @@ The running scripts and corresponding hyper-parameters can be found in `scripts/
 
 ## Checkpoints
 
-We provide both the log files and checkpoints for GeoSSL-DDM [here](). For other baselines, due to the space limitation, we only provide the log files.
+We provide both the log files and checkpoints for GeoSSL-DDM [here](https://drive.google.com/file/d/1-m38Puigi3KCk8q8pU7oo40pDoWAUxDm/view?usp=sharing).
 
 ## Cite us
 
