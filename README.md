@@ -36,6 +36,8 @@ pip install biopython # for Atom3D
 
 ## Pretraining
 
+For the pretraining dataset, please run `examples/generate_Molecule3D.py`.
+
 For pretraining, we provide implementations on eight pretraining baselines and our proposed GeoSSL-DDM under the `examples` folder:
 - Supervised pretraining in `pretrain_Supervised.py`.
 - Type prediction pretraining in `pretrain_ChargePrediction.py`.
