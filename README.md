@@ -33,10 +33,40 @@ pip install cffi # for Atom3D
 pip install biopython # for Atom3D
 ```
 
+## Datasets
+
+- For Molecule3D (pretraining) dataset, please run `examples/generate_Molecule3D.py`. The default path is `data/Molecule3D/Molecule3D_1000000`.
+- For QM9, it is automatically downloaded in pyg class. The default path is `data/molecule_datasets/qm9`.
+- For MD17, it is automatically downloaded in pyg class. The default path is `data/md17`.
+- For LBA, please use the following commands:
+```
+cd data
+mkdir -p lba/raw
+mkdir -p lba/processed
+cd lba/raw
+
+wget http://www.pdbbind.org.cn/download/PDBbind_v2020_refined.tar.gz
+tar -xzvf PDBbind_v2020_refined.tar.gz
+
+wget https://zenodo.org/record/4914718/files/LBA-split-by-sequence-identity-30.tar.gz
+tar -xzvf LBA-split-by-sequence-identity-30.tar.gz
+mv split-by-sequence-identity-30/indices ../processed/
+mv split-by-sequence-identity-30/targets ../processed/
+```
+- For LEP, please use the following commands:
+```
+cd data
+mkdir -p lep/raw
+mkdir -p lep/processed
+cd lep/raw
+
+wget https://zenodo.org/record/4914734/files/LEP-raw.tar.gz
+tar -xzvf LEP-raw.tar.gz
+wget https://zenodo.org/record/4914734/files/LEP-split-by-protein.tar.gz
+tar -xzvf LEP-split-by-protein.tar.gz
+```
 
 ## Pretraining
-
-For the pretraining dataset, please run `examples/generate_Molecule3D.py`.
 
 For pretraining, we provide implementations on eight pretraining baselines and our proposed GeoSSL-DDM under the `examples` folder:
 - Supervised pretraining in `pretrain_Supervised.py`.
