@@ -31,6 +31,8 @@ pip install ase  # for SchNet
 pip install atom3d # for Atom3D
 pip install cffi # for Atom3D
 pip install biopython # for Atom3D
+
+pip intall -e .
 ```
 
 ## Datasets
